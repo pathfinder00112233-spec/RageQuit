@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RageQuit.exe — Instant Resignation Simulator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --accent: #ef4444;
+      --slack: #4a154b;
+      --slack-bg: #f8fafc;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    p.sub {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.35rem;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #f8fafc;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+    button.quit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+      transition: transform 0.1s ease, background 0.2s;
+    }
+    button.quit-btn:hover {
+      background: #dc2626;
+    }
+    button.quit-btn:active {
+      transform: scale(0.98);
+    }
+    /* Slack Simulation Modal */
+    #simulator {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .slack-window {
+      background: white;
+      color: #1d1c1d;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .slack-header {
+      background: var(--slack);
+      color: white;
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .slack-body {
+      padding: 16px;
+      min-height: 220px;
+      max-height: 350px;
+      overflow-y: auto;
+      background: var(--slack-bg);
+      font-size: 0.9rem;
+    }
+    .msg {
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .msg b {
+      color: #1264a3;
+    }
+    .typing {
+      font-style: italic;
+      color: #616061;
+      font-size: 0.8rem;
+    }
+    .freedom-banner {
+      background: #22c55e;
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-weight: bold;
+      display: none;
+    }
+    .close-btn {
+      background: #0f172a;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>RageQuit.exe</h1>
+    <p class="sub">Instant catharsis without ruining your credit score.</p>
+    
+    <label for="bossName">Boss's First Name</label>
+    <input type="text" id="bossName" placeholder="e.g. Chad, Brenda" value="Chad">
+
+    <label for="companyName">Company Name</label>
+    <input type="text" id="companyName" placeholder="e.g. Global Tech Corp" value="InnoCorp">
+
+    <label for="reason">Primary Grievance</label>
+    <select id="reason">
+      <option value="underpaid">Being paid in pizza parties and empty promises</option>
+      <option value="meetings">8 AM status calls that could have been a 2-word Slack</option>
+      <option value="micromanaged">Being asked for updates on things asked 5 mins ago</option>
+      <option value="soul">Total, irreparable spiritual exhaustion</option>
+    </select>
+
+    <label for="tone">Resignation Style</label>
+    <select id="tone">
+      <option value="rage">Scorched Earth (All Caps Fury)</option>
+      <option value="cold">Cold Corporate Freeze-Out</option>
+      <option value="pirate">Leaving to Become a Pirate</option>
+    </select>
+
+    <button class="quit-btn" onclick="triggerQuit()">Submit Resignation</button>
+  </div>
+
+  <!-- Fake Slack Modal -->
+  <div id="simulator">
+    <div class="slack-window">
+      <div class="slack-header">
+        <span id="channelName">#direct-message</span>
+        <span>🔴 🟡 🟢</span>
+      </div>
+      <div class="slack-body" id="chatArea"></div>
+      <div class="freedom-banner" id="freedomBanner">
+        🎉 100% UNEMPLOYED & STRESS-FREE (SIMULATED) 🎉
+      </div>
+      <button class="close-btn" id="closeBtn" onclick="resetSim()">Back to Safety (Keep Your Job)</button>
+    </div>
+  </div>
+
+  <script>
+    function triggerQuit() {
+      const boss = document.getElementById('bossName').value || 'Boss';
+      const company = document.getElementById('companyName').value || 'The Company';
+      const reason = document.getElementById('reason').selectedOptions[0].text;
+      const tone = document.getElementById('tone').value;
+
+      document.getElementById('simulator').style.display = 'flex';
+      const chat = document.getElementById('chatArea');
+      chat.innerHTML = '';
+
+      let messageText = '';
+      if (tone === 'rage') {
+        messageText = `I QUIT EFFECTIVE RIGHT NOW. Fix your own broken spreadsheets. Reason: ${reason}. DO NOT CALL ME.`;
+      } else if (tone === 'cold') {
+        messageText = `Please accept this as immediate notice. My access will terminate at 5 PM. Reason: ${reason}.`;
+      } else {
+        messageText = `I am forfeiting my 401(k) to join a pirate vessel sailing the high seas. Farewell.`;
+      }
+
+      // 1. Post user message
+      chat.innerHTML += `<div class="msg"><b>You:</b> ${messageText}</div>`;
+
+      // 2. Typing indicator
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing';
+      typingDiv.id = 'typingIndicator';
+      typingDiv.innerText = `${boss} is typing...`;
+      chat.appendChild(typingDiv);
+
+      // 3. Staggered responses
+      setTimeout(() => {
+        typingDiv.remove();
+        chat.innerHTML += `<div class="msg"><b>${boss}:</b> Wait, what?? Are you serious right now?</div>`;
+        chat.appendChild(typingDiv);
+        typingDiv.innerText = `${boss} is typing...`;
+      }, 1500);
+
+      setTimeout(() => {
+        typingDiv.remove();
+        chat.innerHTML += `<div class="msg"><b>${boss}:</b> Can we jump on a quick huddle? Please do NOT send this to HR.</div>`;
+        chat.appendChild(typingDiv);
+        typingDiv.innerText = `HR Bot is typing...`;
+      }, 3500);
+
+      setTimeout(() => {
+        typingDiv.remove();
+        chat.innerHTML += `<div class="msg" style="color: red;"><b>HR Bot:</b> Access to Google Workspace, Slack, and Jira revoked. Badge deactivated.</div>`;
+        document.getElementById('freedomBanner').style.display = 'block';
+        document.getElementById('closeBtn').style.display = 'block';
+      }, 5500);
+    }
+
+    function resetSim() {
+      document.getElementById('simulator').style.display = 'none';
+      document.getElementById('freedomBanner').style.display = 'none';
+      document.getElementById('closeBtn').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
